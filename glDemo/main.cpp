@@ -1,6 +1,8 @@
 
 #include "core.h"
 
+using namespace std;
+
 
 // global variables
 
@@ -23,6 +25,15 @@ bool sPressed = false;
 bool aPressed = false;
 bool dPressed = false;
 
+//creates generator for random generation
+mt19937 engine;
+uniform_real_distribution<float> range;
+
+//creates Vektors for position of point
+vector<float> xValues;
+vector<float> yValues;
+
+
 
 // Function prototypes
 void renderScene();
@@ -33,6 +44,7 @@ void drawStarOutline();
 void drawStarShaded();
 void drawTank();
 void drawSemiCircleStudio();
+void drawPoints();
 
 void resizeWindow(GLFWwindow* window, int width, int height);
 void keyboardHandler(GLFWwindow* window, int key, int scancode, int action, int mods);
@@ -86,12 +98,31 @@ int main() {
 	// *** setup viewplane to the appropriate size
 	gluOrtho2D(-1.1f, 1.1f, -1.1f, 1.1f);
 
-	//
+
+	//generates random positions and confides them within an area
+	random_device rd;
+	engine = mt19937(rd());
+	range = uniform_real_distribution<float>(-1.0f, 1.0f);
+
+	//makes enough space in vector for 100 points
+	xValues.resize(100);
+	yValues.resize(100);
+
+	//fills Vector list with random values for pointpositions
+	for (int i = 0; i < 100; i++) 
+	{
+		xValues[i] = range(engine);
+		yValues[i] = range(engine);
+	}
+
+
+	
 	// 2. Main loop
 	// 
 	
 	// Loop while program is not terminated.
-	while (!glfwWindowShouldClose(window)) {
+	while (!glfwWindowShouldClose(window)) 
+	{
 
 		updateScene();
 		renderScene();						// Render into the current buffer
@@ -121,12 +152,14 @@ void renderScene()
 	//drawStarOutline();
 	//drawStarShaded();
 	//drawTank();
-	drawSemiCircleStudio();
+	//drawSemiCircleStudio();
+	drawPoints();
 }
 
 // Rendering functions
 
-void drawShadedTriangle() {
+void drawShadedTriangle() 
+{
 
 	glBegin(GL_TRIANGLES);
 
@@ -142,7 +175,8 @@ void drawShadedTriangle() {
 	glEnd();
 }
 
-void drawStarOutline() {
+void drawStarOutline() 
+{
 
 	glBegin(GL_LINE_LOOP);
 
@@ -179,7 +213,8 @@ void drawStarOutline() {
 	glEnd();
 }
 
-void drawStarShaded() {
+void drawStarShaded() 
+{
 
 	glBegin(GL_TRIANGLE_FAN);
 
@@ -202,7 +237,8 @@ void drawStarShaded() {
 	glEnd();
 }
 
-void drawTank() {
+void drawTank() 
+{
 
 	// Render body
 	glBegin(GL_LINE_LOOP);
@@ -310,6 +346,25 @@ void keyboardHandler(GLFWwindow* window, int key, int scancode, int action, int 
 
 
 // Function called to animate elements in the scene
-void updateScene() {
+void updateScene() 
+{
 }
 
+void drawPoints()
+{
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	glPointSize(5.0f);
+	glColor3ub(90, 230, 100);
+	glBegin(GL_POINTS);
+
+	for (int i = 0; i < 100; i++) 
+	{
+		/*float x = range(engine);
+		float y = range(engine);
+		glVertex2f(x, y);*/
+
+		glVertex2f(xValues[i], yValues[i]);
+	}
+
+	glEnd();
+}
